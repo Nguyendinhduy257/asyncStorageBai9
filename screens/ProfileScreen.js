@@ -1,16 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons'; // Import thêm icon để làm đẹp nút bấm
 
 const ProfileScreen = ({ route }) => {
-  // Lấy hàm đăng xuất được truyền từ App.js qua initialParams
   const { signOutContext } = route.params || {};
 
   const handleSignOut = async () => {
     try {
-      // 1. Xóa token trong ổ cứng
       await AsyncStorage.removeItem('userToken');
-      // 2. Cập nhật state ở App.js để văng ra màn hình Login
       if (signOutContext) {
         signOutContext();
       }
@@ -21,24 +19,36 @@ const ProfileScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* Phần 1: Header màu xanh */}
+      {/* Phần 1: Header bo cong mượt mà */}
       <View style={styles.headerBackground}></View>
 
       {/* Phần 2: Thông tin & Avatar */}
       <View style={styles.infoContainer}>
-        <Image
-          source={{ uri: 'https://picsum.photos/id/1005/200/200' }} // Ảnh avatar mẫu
-          style={styles.avatar}
-        />
         
-        <Text style={styles.nameText}>Hung Nguyen</Text>
-        <Text style={styles.roleText}>Mobile developer</Text>
+        {/* Bao bọc Avatar trong một View để tạo hiệu ứng đổ bóng đẹp hơn */}
+        <View style={styles.avatarContainer}>
+          <Image
+            source={require('../assets/NguyenDinhDuy.png')}
+            style={styles.avatar}
+          />
+        </View>
+        
+        <Text style={styles.nameText}>Zuy Nguyen Dinh</Text>
+        
+        {/* Nhóm thông tin phụ (MSSV, Role) */}
+        <View style={styles.badgeContainer}>
+          <Text style={styles.roleText}>23810310435 D18CNPM4</Text>
+          <Text style={styles.dotSeparator}>•</Text>
+          <Text style={styles.roleText}>Mobile developer</Text>
+        </View>
         
         <Text style={styles.descText}>
-          I have above 5 years of experience in native mobile apps development, now i am learning React Native
+          I have above 5 months of experience in native mobile apps development, now i am learning React Native. Always eager to learn new technologies!
         </Text>
 
-        <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
+        {/* Nút Sign Out được làm to, thoáng và có icon */}
+        <TouchableOpacity style={styles.signOutBtn} activeOpacity={0.8} onPress={handleSignOut}>
+          <Ionicons name="log-out-outline" size={22} color="#FFF" style={styles.signOutIcon} />
           <Text style={styles.signOutBtnText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
@@ -46,59 +56,97 @@ const ProfileScreen = ({ route }) => {
   );
 };
 
+// ==========================================
+// STYLES: Đã tinh chỉnh khoảng cách, bo góc và bóng đổ
+// ==========================================
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#FAFAFA' 
+    backgroundColor: '#FAFAFA', 
   },
   headerBackground: {
-    backgroundColor: '#52C4FF', // Màu xanh nước biển nhạt
-    height: 160,
+    backgroundColor: '#52C4FF',
+    height: 190, // Tăng chiều cao để tạo độ thoáng
     width: '100%',
+    borderBottomLeftRadius: 40, // Bo cong góc dưới
+    borderBottomRightRadius: 40,
   },
   infoContainer: {
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 25, // Tăng lề 2 bên
+  },
+  avatarContainer: {
+    marginTop: -65, // Kéo lên nhiều hơn do ảnh đã to ra
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 6, // Đổ bóng cho Android
+    borderRadius:70, //bo góc
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 4,
-    borderColor: '#FFF', // Viền trắng xung quanh avatar
-    marginTop: -50, // Kéo ảnh lên trên đè vào phần nền xanh
-    marginBottom: 10,
+    width: 130, // Avatar to hơn
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 5,
+    borderColor: '#FFF',
+    backgroundColor: '#EEE',
   },
   nameText: { 
-    fontSize: 22, 
-    fontWeight: 'bold', 
-    color: '#333', 
-    marginBottom: 5 
+    fontSize: 26, // Chữ to và rõ ràng hơn
+    fontWeight: '800', 
+    color: '#2C3E50', 
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 25, // Tạo khoảng trắng với đoạn mô tả
   },
   roleText: { 
-    fontSize: 14, 
-    color: '#52C4FF', // Cùng màu với header
-    marginBottom: 15 
+    fontSize: 15, 
+    color: '#52C4FF', 
+    fontWeight: '600',
+  },
+  dotSeparator: {
+    fontSize: 15,
+    color: '#CCC',
+    marginHorizontal: 10,
   },
   descText: {
-    fontSize: 13,
-    color: '#777',
+    fontSize: 15, // Chữ to hơn một chút
+    color: '#666',
     textAlign: 'center',
-    lineHeight: 20,
-    paddingHorizontal: 15,
-    marginBottom: 30,
+    lineHeight: 24, // Giãn dòng để "thở"
+    paddingHorizontal: 20,
+    marginBottom: 40, // Đẩy nút Sign Out xuống xa hơn
   },
   signOutBtn: {
-    backgroundColor: '#F2A900', // Màu cam/vàng
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F2A900',
+    paddingVertical: 16, // Nút cao và dễ bấm hơn
+    paddingHorizontal: 40,
+    borderRadius: 16, // Bo góc mượt mà
+    width: '85%', // Chiếm 85% chiều rộng màn hình
+    shadowColor: '#F2A900', // Đổ bóng cùng màu với nút
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  signOutIcon: {
+    marginRight: 8,
   },
   signOutBtnText: { 
     color: '#FFF', 
     fontWeight: 'bold', 
-    fontSize: 14 
+    fontSize: 17, // Chữ trong nút to hơn
+    letterSpacing: 0.5,
   },
 });
 
